@@ -24,11 +24,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 # ==========================================
 
 iris = load_iris()
-
-# Use numerical features only.
-# Species labels are deliberately ignored.
 data = iris.data
-
 feature_names = iris.feature_names
 
 print("=" * 55)
@@ -36,8 +32,15 @@ print("KMEANS ANOMALY DETECTION")
 print("=" * 55)
 
 print("\nDataset: Iris")
-print("Samples:", data.shape[0])
-print("Features:", data.shape[1])
+print("Total samples:", data.shape[0])
+print("Number of features:", data.shape[1])
+
+print("\nFeature names:")
+for name in feature_names:
+    print("-", name)
+
+print("\nFirst 5 samples:")
+print(data[:5])
 
 
 # ==========================================
@@ -50,7 +53,21 @@ std = np.std(data, axis=0)
 # Prevent division by zero
 std[std == 0] = 1
 
+# Apply Z-score standardization
 scaled_data = (data - mean) / std
+
+print("\n" + "=" * 55)
+print("DATA STANDARDIZATION")
+print("=" * 55)
+
+print("\nFeature means:")
+print(mean)
+
+print("\nFeature standard deviations:")
+print(std)
+
+print("\nFirst 5 standardized samples:")
+print(scaled_data[:5])
 
 print("\nData preprocessing completed.")
 
