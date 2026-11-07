@@ -7,6 +7,7 @@ An unsupervised machine learning project that implements the KMeans clustering a
 The project uses the Iris dataset as an experimental case study and demonstrates data preprocessing, iterative clustering, centroid-based distance calculation, anomaly detection, and visualization.
 
 ---
+![Python Tests](https://github.com/lottabytes-create/KMeans-Anomaly-Detection/actions/workflows/tests.yml/badge.svg)
 
 ## Table of Contents
 
