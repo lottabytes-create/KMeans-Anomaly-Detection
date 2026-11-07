@@ -24,6 +24,7 @@ The project uses the Iris dataset as an experimental case study and demonstrates
 - [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Running Tests](#running-tests)
 - [Output Files](#output-files)
 - [Implementation Details](#implementation-details)
 - [Limitations](#limitations)
@@ -59,12 +60,13 @@ The main objectives are:
 ## Features
 
 - **Custom KMeans implementation:** Implements centroid initialization, cluster assignment, centroid updating, and iterative convergence using NumPy.
-- **Data standardization:** Normalizes numerical features to ensure comparable scales during distance calculations.
+- **Data standardization:** Standardizes numerical features to ensure comparable scales during distance calculations.
 - **Euclidean distance:** Measures the distance between each observation and its assigned centroid.
 - **Cluster-specific anomaly detection:** Uses Median Absolute Deviation (MAD) to establish individual distance thresholds for each cluster.
 - **Data visualization:** Displays cluster assignments, potential anomalies, and centroids using Matplotlib.
 - **CSV export:** Saves detection results and numerical measurements for further analysis.
 - **Reproducibility:** Uses a fixed random seed for consistent centroid initialization.
+- **Automated testing:** Includes unit tests for the custom KMeans implementation.
 
 ## Technologies
 
@@ -74,8 +76,12 @@ The main objectives are:
 | NumPy | Numerical calculations and custom KMeans implementation |
 | Matplotlib | Data visualization |
 | Scikit-learn | Loading the Iris dataset only |
+| Git | Version control |
+| GitHub | Project hosting and documentation |
 
-**Implementation note:** Scikit-learn's `KMeans` implementation is not used. The clustering algorithm is implemented independently using NumPy.
+**Implementation note:** Scikit-learn's built-in `KMeans` implementation is not used. The clustering algorithm is implemented independently using NumPy.
+
+---
 
 ## Dataset
 
@@ -92,7 +98,7 @@ It contains 150 flower observations, each described by four numerical features.
 | Petal length | Length of the petal |
 | Petal width | Width of the petal |
 
-Dataset characteristics:
+**Dataset characteristics:**
 
 - Number of observations: 150
 - Number of numerical features: 4
@@ -104,6 +110,8 @@ The original species labels are deliberately excluded from the clustering proces
 Only the numerical measurements are used as input to the KMeans algorithm. This allows the clustering process to operate without predefined class information.
 
 **Important:** The Iris dataset is primarily a classification dataset rather than a dataset containing verified anomalies. Therefore, the detected observations are treated as potential anomalies, not confirmed abnormal samples.
+
+---
 
 ## Methodology
 
@@ -117,26 +125,24 @@ To prevent features with larger numerical values from disproportionately influen
 
 The standardization formula is:
 
-\[
-z = \frac{x-\mu}{\sigma}
-\]
+`z = (x - μ) / σ`
 
 Where:
 
-- \(x\) represents the original feature value.
-- \(\mu\) represents the feature mean.
-- \(\sigma\) represents the feature standard deviation.
-- \(z\) represents the standardized value.
+- `x` represents the original feature value.
+- `μ` represents the feature mean.
+- `σ` represents the feature standard deviation.
+- `z` represents the standardized value.
 
 The standardized dataset is subsequently used as input to KMeans.
 
 ### 2. KMeans Clustering
 
-KMeans divides a dataset into \(K\) clusters by minimizing the within-cluster sum of squared distances.
+KMeans divides a dataset into K clusters by minimizing the within-cluster sum of squared distances.
 
 The implementation follows these steps:
 
-1. Initialize \(K\) centroids by randomly selecting observations from the dataset.
+1. Initialize K centroids by randomly selecting observations from the dataset.
 2. Calculate the Euclidean distance between every observation and each centroid.
 3. Assign each observation to its nearest centroid.
 4. Recalculate each centroid using the mean position of its assigned observations.
@@ -144,22 +150,20 @@ The implementation follows these steps:
 
 The Euclidean distance is defined as:
 
-\[
-d(x,c)=\sqrt{\sum_{j=1}^{n}(x_j-c_j)^2}
-\]
+`d(x, c) = sqrt(Σ[j=1 to n] (x_j - c_j)^2)`
 
 Where:
 
-- \(x\) represents an observation.
-- \(c\) represents a centroid.
-- \(n\) represents the number of features.
-- \(d(x,c)\) represents their Euclidean distance.
+- `x` represents an observation.
+- `c` represents a centroid.
+- `n` represents the number of features.
+- `d(x, c)` represents their Euclidean distance.
 
-The experiment uses:
+The experiment uses the following parameters:
 
 | Parameter | Value |
 |---|---|
-| Number of clusters (\(K\)) | 3 |
+| Number of clusters (K) | 3 |
 | Maximum iterations | 100 |
 | Convergence tolerance | 0.0001 |
 | Random seed | 42 |
@@ -178,45 +182,38 @@ The implementation uses a cluster-specific Median Absolute Deviation (MAD) thres
 
 MAD is a robust statistical measure of dispersion.
 
-For each cluster, the following values are calculated:
+For each cluster, the following values are calculated.
 
 **Median distance:**
 
-\[
-M_c = \operatorname{median}(D_c)
-\]
+`M_c = median(D_c)`
 
 **Median Absolute Deviation:**
 
-\[
-MAD_c =
-\operatorname{median}(|D_c-M_c|)
-\]
+`MAD_c = median(|D_c - M_c|)`
 
 **Anomaly threshold:**
 
-\[
-T_c = M_c + 3(1.4826 \times MAD_c)
-\]
+`T_c = M_c + 3 × 1.4826 × MAD_c`
 
 Where:
 
-- \(D_c\) represents the distances within cluster \(c\).
-- \(M_c\) represents the median distance.
-- \(MAD_c\) represents the median absolute deviation.
-- \(T_c\) represents the anomaly threshold.
+- `D_c` represents the distances within cluster c.
+- `M_c` represents the median distance.
+- `MAD_c` represents the median absolute deviation.
+- `T_c` represents the anomaly threshold.
 
 The factor 1.4826 is a consistency factor commonly used when relating MAD to standard deviation under a normal distribution.
 
 An observation is classified as a potential anomaly when:
 
-\[
-d(x,c)>T_c
-\]
+`d(x, c) > T_c`
 
 If MAD is approximately zero, the implementation uses the 97.5th percentile of that cluster's distances as a fallback threshold.
 
 This method evaluates observations relative to their own clusters rather than applying a single global threshold.
+
+---
 
 ## Experimental Results
 
@@ -242,32 +239,47 @@ The numerical detection results are exported to a CSV file for further inspectio
 
 **Interpretation note:** A large distance from a centroid does not necessarily indicate a genuinely abnormal observation. The results represent statistical deviations according to the selected detection criterion.
 
+---
+
 ## Project Structure
+
+The repository is organized as follows:
 
 ```text
 KMeans-Anomaly-Detection/
 │
+├── outputs/
+│   ├── anomaly_detection_result.png
+│   └── anomaly_results.csv
+│
+├── tests/
+│   └── test_kmeans.py
+│
 ├── kmeans.py
-│   └── Custom KMeans implementation
 │
 ├── main.py
-│   └── Main experiment and anomaly detection
 │
 ├── requirements.txt
-│   └── Project dependencies
 │
 ├── README.md
-│   └── Project documentation
 │
-├── .gitignore
-│   └── Git exclusion rules
-│
-├── anomaly_detection_result.png
-│   └── Experimental visualization
-│
-└── anomaly_results.csv
-    └── Exported anomaly detection results
+└── .gitignore
 ```
+
+| File / Directory | Description |
+|---|---|
+| `main.py` | Main experiment execution |
+| `kmeans.py` | Custom KMeans algorithm |
+| `requirements.txt` | Project dependencies |
+| `tests/` | Automated unit tests |
+| `test_kmeans.py` | Tests for the KMeans implementation |
+| `outputs/` | Generated experimental results |
+| `anomaly_detection_result.png` | Visualization of clustering and anomaly detection |
+| `anomaly_results.csv` | Exported numerical detection results |
+| `README.md` | Project documentation |
+| `.gitignore` | Files and directories excluded from Git |
+
+---
 
 ## Installation
 
@@ -280,7 +292,7 @@ KMeans-Anomaly-Detection/
 ### 1. Clone the repository
 
 ```bash
-git clone YOUR_REPOSITORY_URL
+git clone https://github.com/lottabytes-create/KMeans-Anomaly-Detection.git
 ```
 
 Navigate into the project directory:
@@ -315,6 +327,8 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
+---
+
 ## Usage
 
 After installing the dependencies, execute:
@@ -334,13 +348,31 @@ The program will:
 7. Export the numerical results.
 8. Generate the visualization.
 
+Generated files are saved inside the `outputs/` directory.
+
+---
+
+## Running Tests
+
+The project includes automated unit tests for the custom KMeans implementation.
+
+To execute the test suite, run the following command from the project root directory:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The test suite checks the behavior of the implementation, including output dimensions, reproducibility, and invalid parameter handling.
+
+---
+
 ## Output Files
 
-### `anomaly_detection_result.png`
+### `outputs/anomaly_detection_result.png`
 
 A graphical representation of the clustering and anomaly detection results.
 
-### `anomaly_results.csv`
+### `outputs/anomaly_results.csv`
 
 A CSV file containing the detection results for all observations.
 
@@ -348,15 +380,17 @@ The exported columns include:
 
 | Column | Description |
 |---|---|
-| sample_index | Original observation index |
-| cluster | Assigned cluster |
-| distance | Distance to assigned centroid |
-| threshold | Applicable cluster-specific threshold |
-| is_anomaly | Anomaly indicator (1 = potential anomaly, 0 = otherwise) |
-| sepal length (cm) | Original sepal length |
-| sepal width (cm) | Original sepal width |
-| petal length (cm) | Original petal length |
-| petal width (cm) | Original petal width |
+| `sample_index` | Original observation index |
+| `cluster` | Assigned cluster |
+| `distance` | Distance to assigned centroid |
+| `threshold` | Applicable cluster-specific threshold |
+| `is_anomaly` | Anomaly indicator (1 = potential anomaly, 0 = otherwise) |
+| `sepal length (cm)` | Original sepal length |
+| `sepal width (cm)` | Original sepal width |
+| `petal length (cm)` | Original petal length |
+| `petal width (cm)` | Original petal width |
+
+---
 
 ## Implementation Details
 
@@ -376,6 +410,8 @@ The following NumPy operations are used:
 
 The main experiment is implemented in `main.py`, which handles dataset loading, preprocessing, clustering, anomaly detection, visualization, and CSV export.
 
+---
+
 ## Limitations
 
 The current implementation has several limitations:
@@ -389,29 +425,34 @@ The current implementation has several limitations:
 
 These limitations should be considered when interpreting the experimental results.
 
+---
+
 ## Future Improvements
 
 Possible extensions include:
 
 - Implementing KMeans++ initialization.
-- Comparing different values of \(K\).
+- Comparing different values of K.
 - Evaluating alternative anomaly detection thresholds.
 - Comparing MAD with interquartile range (IQR) and standard deviation-based methods.
 - Adding PCA for dimensionality reduction and visualization.
 - Evaluating the implementation on datasets containing verified anomalies.
-- Adding automated unit tests and performance comparisons.
-
-## References
-
-- NumPy Documentation: https://numpy.org/doc/
-- Matplotlib Documentation: https://matplotlib.org/stable/
-- Scikit-learn Documentation: https://scikit-learn.org/stable/
-- Iris Dataset: https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html
-
-## Author
-
-lottabytes
+- Improving automated test coverage.
+- Adding performance comparisons with established clustering implementations.
 
 ---
 
-*This project was developed as a practical exploration of unsupervised machine learning, KMeans clustering, and statistical anomaly detection.*
+## References
+
+- [NumPy Documentation](https://numpy.org/doc/)
+- [Matplotlib Documentation](https://matplotlib.org/stable/)
+- [Scikit-learn Documentation](https://scikit-learn.org/stable/)
+- [Iris Dataset Documentation](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html)
+
+---
+
+## Author
+
+**lottabytes-create**
+
+This project was developed as a practical exploration of unsupervised machine learning, KMeans clustering, and statistical anomaly detection.
